@@ -5,7 +5,7 @@
 
 from enum import Enum
 from modbus import *
-
+from lfv_read_parse import get_barrier_data
 int port = 502
 
 class IP(Enum):

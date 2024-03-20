@@ -1,8 +1,5 @@
 
 
-from modbus import *
-
-
 
 def get_barrier_data(reg):
     if reg:
