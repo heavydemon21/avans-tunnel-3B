@@ -1,31 +1,22 @@
 from pyModbusTCP.client import ModbusClient
 
-# ---- Internal functions ----
-def mbclient_set(ip: str, port: int = 0):
-   if port == 0:
-      c = ModbusClient(host=ip, auto_open=True, auto_close=True)
-   else:
-      c = ModbusClient(host=ip, port=port, auto_open=True, auto_close=True)
-   return c
+class modbus:
+   c: ModbusClient = None
 
-# ---- External functions ----
-def modbus_get(ip: str, port: int = 0):
-   c = mbclient_set(ip=ip, port=port)
+   def __init__(self, ip: str, port: int = 0):
+      if port == 0:
+         self.c = ModbusClient(host=ip, auto_open=True, auto_close=True)
+      else:
+         self.c = ModbusClient(host=ip, port=port, auto_open=True, auto_close=True)
+
+   def get(self, start_addr, len: int = 1):
+      regs = self.c.read_holding_registers(start_addr, len)
+      if regs:
+         return regs
+      else:
+         #ToDo add Error handling here
+         return None
    
-   regs = c.read_holding_registers(0,2)
-
-   if regs:
-      print(regs)
-      return regs
-   else:
-      #ToDo add Error handling here
-      return None
-   
-
-def modbus_set(mb_addr: int, data, ip: str, port: int = 0):
-   c = mbclient_set(ip=ip, port=port)
-
-   return c.write_multiple_registers(mb_addr, data)
-
-
-
+   # data is array of ints for subsequent addresses.
+   def set(self, start_addr: int, data):
+      return self.c.write_multiple_registers(start_addr, data)
