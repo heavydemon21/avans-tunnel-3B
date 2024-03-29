@@ -1,6 +1,7 @@
-from modbus import *
+from modbus import modbus
 
-modbus_get("localhost")
+t = modbus('86.88.46.183', 502)
 
-modbus_set(10, [44, 55], "localhost")
-
+print(t.get(1000, 5))
+print(t.set(1000, [0]))
+print(t.get(1000, 5))
