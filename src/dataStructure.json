@@ -1,0 +1,66 @@
+{
+    "type":"snelheidAutoPerZone",
+    "snelHedenToegang":[
+       20,
+       30,
+       40,
+       100,
+       ...
+    ],
+    "snelHedeningang":[
+       20,
+       30,
+       ....
+    ],
+    "snelHedencentrale":[
+       20,
+       30,
+       20,
+       100,
+       ....
+    ],
+    "snelHedenverlating":[
+       20,
+       30,
+       40,
+       ...
+    ]
+}
+
+{
+    "type":"autoPerZone",
+    "autos":[
+       40,
+       22,
+       2,
+       13
+    ]
+}
+
+{
+    "type":"sosBericht",
+    "statusSOS":true,
+    "storingBericht":"storing door een gesprongen leiding"
+}
+
+{
+    "type":"lfvStatusStoring",
+    "storingLFV":[
+        true,
+        false,
+        false,
+        true,
+        ...
+    ]
+}
+
+{
+    "type":"lfvStatussen",
+    "statusLFV":[
+        false,
+        false,
+        false,
+        true,
+        ...
+    ]
+}
