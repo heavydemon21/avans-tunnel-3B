@@ -2,7 +2,6 @@
 
 import asyncio
 import json
-from io import StringIO
 from enum import Enum
 
 from websockets.server import serve
