@@ -18,25 +18,32 @@ class StateTunnel(Enum):
 
 CurrentTunnelState = StateTunnel.INIT;
 
-lfv_processing = process_lfv()
+#TODO: add ip and correct port
+ip=""
+port=502
 
-lfv_processing.update_all()
+
+lfv_processing = None
+
 
 while(1):
-
-
-#TODO: make universal read and parsing functions
 
     match CurrentTunnelState:
         case StateTunnel.INIT:
             print("INIT")
+            
+            #initialize everything
+            lfv_processing = process_lfv(ip=ip,port=port)
 
+            # goto next state
             CurrentTunnelState = StateTunnel.RUN
         case StateTunnel.RUN:
-            #print("RUN")
 
-            pass
-
+            if lfv_processing is not None:
+                # update all the lvf's
+                lfv_processing.update_all()
+            else:
+                print("ERROR: lfv_proccesing is not initalized")
 
             #TODO: from run -> SOS / run -> STOP
         case StateTunnel.SOS:
@@ -48,4 +55,4 @@ while(1):
 
             #TODO: from STOP -> run
         case _:
-            print("ERROR state tunnel")
+            print("ERROR: state tunnel")

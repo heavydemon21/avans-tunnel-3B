@@ -3,7 +3,7 @@ from modbus import *
 class Zone:
     def __init__(self, ModbusInstance: modbus, startAddress: int ):
         self.StartAddress = startAddress
-        self.Beschikbaar = {}
+        self.Beschikbaar = 0
         self.Stand = {}
         self.Storing = {}
         self.ModbusInstance = ModbusInstance
