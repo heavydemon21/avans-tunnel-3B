@@ -13,7 +13,7 @@ class Afsluitboom:
         self.ModbusInstance = ModbusInstance
 
     def update(self):
-        regs = self.ModbusInstance.get(1000, 6) 
+        regs = self.ModbusInstance.get(1006, 6) 
         if regs:
             self.Stand = regs[1]
             self.Bereikbaar = regs[2]  
@@ -23,7 +23,7 @@ class Afsluitboom:
 
     def SetStand(self, value):
         if self.Bereikbaar:
-            self.ModbusInstance.set(1000, value)
+            self.ModbusInstance.set(1006, value)
 
 
         

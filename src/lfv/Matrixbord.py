@@ -10,7 +10,7 @@ class Matrix:
         self.ModbusInstance = ModbusInstance
 
     def update(self):
-        regs = self.ModbusInstance.get(7000, 5)
+        regs = self.ModbusInstance.get(7010, 5)
         if regs:
             self.Stand = regs[1]
             self.Bereikbaar = regs[2]  
@@ -18,8 +18,7 @@ class Matrix:
             self.Storing = regs[4]
 
     def SetStand(self, value):
-        if self.Bereikbaar:
-            self.ModbusInstance.set(7000, value)
+        self.ModbusInstance.set(7000, value)
 
 
         
