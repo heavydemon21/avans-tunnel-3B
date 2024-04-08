@@ -1,12 +1,13 @@
+from typing import List
 from modbus import *
 
 class Zone:
     def __init__(self, ModbusInstance: modbus, startAddress: int ):
         self.StartAddress = startAddress
-        self.niveau = {}
-        self.capaciteit_beschikbaar = {}
-        self.energieverbruik = {}
-        self.branduren = {}
+        self.niveau = 0
+        self.capaciteit_beschikbaar = 0
+        self.energieverbruik = 0
+        self.branduren = 0
         self.ModbusInstance = ModbusInstance
     
     # TODO: maak deze functie
@@ -22,9 +23,9 @@ class Verlichting:
         self.Bereikbaar = 0
         self.Richting = 0 # aflopend | oplopend
         self.ModbusInstance = ModbusInstance
-        self.Zones = []
+        self.Zones: List[Zone] = []
 
-        self.StartAddresses = start_addresses = [3000, 3006, 3012, 3018, 3024, 3030, 3036]  # start addresses
+        self.StartAddresses = start_addresses = [3500,3506, 3512, 3518]  # start addresses
         
         for start_address in start_addresses:
             zone = Zone(ModbusInstance, start_address)
@@ -41,4 +42,5 @@ class Verlichting:
                 zone.branduren = regs[5]
                 self.Bereikbaar = 1
         
-
+    def SetStand(self, value: int):
+        self.ModbusInstance.set(2500, value)

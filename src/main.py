@@ -9,6 +9,7 @@ from lfv_parse import *
 
 
 
+
 class StateTunnel(Enum):
     INIT = 1
     RUN = 2
@@ -19,12 +20,13 @@ class StateTunnel(Enum):
 CurrentTunnelState = StateTunnel.INIT;
 
 #TODO: add ip and correct port
-ip=""
+ip="128.64.32.32"
 port=502
 
 
-lfv_processing = None
 
+            #initialize everything
+lfv_processing = process_lfv(ip=ip,port=port)
 
 while(1):
 
@@ -32,9 +34,6 @@ while(1):
         case StateTunnel.INIT:
             print("INIT")
             
-            #initialize everything
-            lfv_processing = process_lfv(ip=ip,port=port)
-
             # goto next state
             CurrentTunnelState = StateTunnel.RUN
         case StateTunnel.RUN:
@@ -42,6 +41,7 @@ while(1):
             if lfv_processing is not None:
                 # update all the lvf's
                 lfv_processing.update_all()
+
             else:
                 print("ERROR: lfv_proccesing is not initalized")
 
