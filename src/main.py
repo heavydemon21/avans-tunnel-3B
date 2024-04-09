@@ -19,7 +19,7 @@ while(1):
     match CurrentTunnelState:
         case StateTunnel.PRE_INIT:
             # Poll holding register to see if PLC's available
-            if  lfv_check.check():
+            if  lfv_check().check():
                 # Send update message to HMI and blocking wait until response
 
                 # Change state
