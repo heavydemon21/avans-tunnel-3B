@@ -23,24 +23,24 @@ class process_lfv:
         
 
     def  detect_confict(self):
-        if self.Deel1_Spookrijder == 1:
+        if self.Sos.Deel1_Spookrijder == 1:
             sosBericht(True, "Spookrijder op deel 1")
             sos_on(self,1)
             return True
-        if self.Deel2_Spookrijder == 1:
+        if self.Sos.Deel2_Spookrijder == 1:
             sosBericht(True, "Spookrijder op deel 2")
             sos_on(self,1)
             return True
-        if self.Deel3_Spookrijder == 1:
+        if self.Sos.Deel3_Spookrijder == 1:
             sosBericht(True, "Spookrijder op deel 3")
             sos_on(self,1)
             return True
 
-        if self.Zone1_Stilstanden >= 1:
+        if self.Sos.Zone1_Stilstanden >= 1:
             sosBericht(True,"stilstand in zone 1")
             sos_on(self,1)
             return True
-        if self.Zone2_Stilstanden >= 1:
+        if self.Sos.Zone2_Stilstanden >= 1:
             sosBericht(True,"stilstand in zone 2")
             sos_on(self,1)
             return True
