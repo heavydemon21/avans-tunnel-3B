@@ -17,10 +17,10 @@ class CCTV:
         self.ModbusInstance = ModbusInstance
         self.start_address = start_address
 
-        self.SetTilt(self.TiltStand)
-        self.SetPan(self.PanStand)
-        self.SetPreset(self.Preset)
-        self.SetZoom(self.ZoomStand)
+        self.SetTilt([self.TiltStand])
+        self.SetPan([self.PanStand])
+        self.SetPreset([self.Preset])
+        self.SetZoom([self.ZoomStand])
 
     def SetTilt(self, tilt):
             self.TiltStand = tilt

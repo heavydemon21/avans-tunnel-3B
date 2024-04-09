@@ -7,19 +7,19 @@ class SOS:
     def __init__(self, ModbusInstance: modbus):
         self.Bereikbaar = 0
 
-        self.Zone1_SnelheidsOnderschijding= []
-        self.Zone2_SnelheidsOnderschijding= []
+        self.Zone1_SnelheidsOnderschijding= 0
+        self.Zone2_SnelheidsOnderschijding= 0
 
-        self.Deel1_Spookrijder = []
-        self.Deel2_Spookrijder = []
-        self.Deel3_Spookrijder = []
-        self.Zone1_Stilstanden = []
-        self.Zone2_Stilstanden = []
+        self.Deel1_Spookrijder = 0
+        self.Deel2_Spookrijder = 0
+        self.Deel3_Spookrijder = 0
+        self.Zone1_Stilstanden = 0
+        self.Zone2_Stilstanden = 0
 
-        self.Zone1_DisabledDetectiepunten = []
-        self.Zone2_DisabledDetectiepunten = []
-        self.Zone1_DectorenMetStoring = []
-        self.Zone2_DectorenMetStoring = []
+        self.Zone1_DisabledDetectiepunten = 0
+        self.Zone2_DisabledDetectiepunten = 0
+        self.Zone1_DectorenMetStoring = 0
+        self.Zone2_DectorenMetStoring = 0
         self.ModbusInstance = ModbusInstance
 
 

@@ -11,7 +11,7 @@ class Verkeerslicht:
         self.Stand = 1
         self.Storing = {}
 
-        self.SetStand(self.Stand)
+        self.SetStand([self.Stand])
 
     def update(self):
         regs = self.ModbusInstance.get(MODBUS_VERKEERSLICHT_IP,self.StartAddress, 4)
@@ -20,6 +20,6 @@ class Verkeerslicht:
              self.Beschikbaar = regs[2]
              self.Storing = regs[3]
 
-    def SetStand(self, value: int): # value between 1-2
+    def SetStand(self, value): # value between 1-2
         self.ModbusInstance.set(MODBUS_VERKEERSLICHT_IP, self.StartAddress, value)        
 

@@ -13,7 +13,7 @@ class Afsluitboom:
 
         self.ModbusInstance = ModbusInstance
 
-        self.SetStand(self.Stand)
+        self.SetStand([self.Stand])
 
         
 

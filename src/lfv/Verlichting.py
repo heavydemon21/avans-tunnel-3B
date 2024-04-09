@@ -12,7 +12,7 @@ class Zone:
         self.branduren = 0
         self.ModbusInstance = ModbusInstance
 
-        self.SetAutoRegeling(1)
+        self.SetAutoRegeling([1])
     
     # TODO: maak deze functie
     def SetAutoRegeling(self, value): # aan | uit
