@@ -1,7 +1,5 @@
 
-
-
-
+from WebSocket import snelheidAutoPerZone, autoPerZone, sosBericht, lfvStatusStoring, lfvStatussen
 from lfv.Afsluitboom import Afsluitboom
 from lfv.CCTV import Cameras
 from lfv.Matrixbord import Matrix
@@ -9,7 +7,7 @@ from lfv.Verkeerslicht import Verkeerslicht
 from lfv.Verlichting import Verlichting
 from lfv.SOS import SOS
 from modbus import *
-
+from process_sos import *
 
 class process_lfv:
     def __init__(self, ip : str, port : int):
@@ -24,6 +22,29 @@ class process_lfv:
         self.cameras = Cameras(self.modbus, NumberOfCameras)
         
 
+    def  detect_confict(self):
+        if self.Deel1_Spookrijder == 1:
+            sosBericht(True, "Spookrijder op deel 1")
+            sos_on(self,1)
+            return True
+        if self.Deel2_Spookrijder == 1:
+            sosBericht(True, "Spookrijder op deel 2")
+            sos_on(self,1)
+            return True
+        if self.Deel3_Spookrijder == 1:
+            sosBericht(True, "Spookrijder op deel 3")
+            sos_on(self,1)
+            return True
+
+        if self.Zone1_Stilstanden >= 1:
+            sosBericht(True,"stilstand in zone 1")
+            sos_on(self,1)
+            return True
+        if self.Zone2_Stilstanden >= 1:
+            sosBericht(True,"stilstand in zone 2")
+            sos_on(self,1)
+            return True
+        return False
 
     def update_all(self):
         self.Verlichting.update()
