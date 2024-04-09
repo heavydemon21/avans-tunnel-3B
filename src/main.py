@@ -7,12 +7,8 @@ class StateTunnel(Enum):
     SOS = 3
     STOP = 4
 
-test = WebsocketData()
-
 CurrentTunnelState = StateTunnel.INIT;
 
-
-lfv_processing = process_lfv()
 
 
 while(1):
@@ -20,11 +16,10 @@ while(1):
     match CurrentTunnelState:
         case StateTunnel.INIT:
             print("INIT")
-            print(test.jsonMessage)
+            lfv_processing = process_lfv()
             # goto next state
             CurrentTunnelState = StateTunnel.RUN
         case StateTunnel.RUN:
-            print(test.jsonMessage)
             if lfv_processing is not None:
                 # update all the lvf's
                 lfv_processing.update_all()
