@@ -1,8 +1,4 @@
-
-
-
 from modbus import *
-
 class SOS:
     def __init__(self, ModbusInstance: modbus):
         self.Bereikbaar = 0
