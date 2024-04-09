@@ -64,6 +64,8 @@ class WebsocketData:
         try:
             async for message in websocket:
                 print("Received:", message)
+              
+                await self.parseJSON(message)
                 if message.lower() == 'exit':
                     await websocket.send("Server: Exiting")
                     break
@@ -75,6 +77,30 @@ class WebsocketData:
 
     # Other methods...
 
+    async def parseJSON(self, message):
+        type = json.loads(message)
+        typeName = type["type"]
+
+        match typeName:
+            case "start":
+                print("start")
+            case "photocell":
+                data = type["on"]
+                print(data)
+            case "barrier":
+                print("barrier")
+            case "matrix":
+                data = type["state"]
+                print(data)
+            case "lights":
+                data = type["value"]
+                print(data)
+            case "trafficLights":
+                data = type["state"]
+                print(data)
+            case "sosBericht":
+                data = type["statusSOS"]
+                print(data)
 
     # 3B -> HMI
 
