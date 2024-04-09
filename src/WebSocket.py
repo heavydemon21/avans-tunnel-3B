@@ -5,6 +5,8 @@ from enum import Enum
 from lfv_ready import *
 from lfv_parse import *
 connected_clients = set()
+
+
 class StateTunnel(Enum):
     PRE_INIT = 0
     INIT = 1
@@ -17,23 +19,30 @@ class WebsocketData:
         self.CurrentTunnelState = StateTunnel.INIT
         self.jsonMessage = None
         self.lfv_processing = None
+        self.start = False
+        self.sosStatus = False
 
     async def stateMachine(self):
-         while(1):
-
+         while True:
+            await asyncio.sleep(1)
             match self.CurrentTunnelState:
                 case StateTunnel.PRE_INIT:
                     # Poll holding register to see if PLC's available
                     if  lfv_check().check():
                         # Send update message to HMI and blocking wait until response
-
+                        print(self.jsonMessage)
                         # Change state
                         CurrentTunnelState = StateTunnel.INIT
                 case StateTunnel.INIT:
                     print("INIT")
-                    self.lfv_processing = process_lfv()
+                    while(self.start == False):
+                        await asyncio.sleep(1)
+                        print(self.jsonMessage)
+                        dghdgf = 0
+                    #self.lfv_processing = process_lfv()
+                    
                     # goto next state
-                    self.CurrentTunnelState = StateTunnel.RUN
+                    #self.CurrentTunnelState = StateTunnel.RUN
                 case StateTunnel.RUN:
                     print("RUN")
                     if self.lfv_processing is not None:
@@ -49,7 +58,7 @@ class WebsocketData:
                 case StateTunnel.SOS:
                     print("SOS")
                     
-                    if self.jsonMessage['statusSOS'] == False:
+                    if self.sosStatus == False:
                          self.CurrentTunnelState == StateTunnel.RUN
                          
                     #TODO: from SOS -> run
@@ -59,13 +68,15 @@ class WebsocketData:
                     #TODO: from STOP -> run
                 case _:
                     print("ERROR: state tunnel")
+
     async def producer(self, websocket, path):
+        print('prod')
         connected_clients.add(websocket)
         try:
             async for message in websocket:
                 print("Received:", message)
-              
                 await self.parseJSON(message)
+
                 if message.lower() == 'exit':
                     await websocket.send("Server: Exiting")
                     break
@@ -77,13 +88,13 @@ class WebsocketData:
 
     # Other methods...
 
+
     async def parseJSON(self, message):
         type = json.loads(message)
         typeName = type["type"]
-
         match typeName:
             case "start":
-                print("start")
+                self.start = True
             case "photocell":
                 data = type["on"]
                 print(data)
@@ -100,6 +111,7 @@ class WebsocketData:
                 print(data)
             case "sosBericht":
                 data = type["statusSOS"]
+                self.sosStatus = False
                 print(data)
 
     # 3B -> HMI
@@ -177,15 +189,16 @@ class WebsocketData:
                 await ws.send("Broadcast message: This is a broadcast message from the server.")
         
     async def initWebSocket(self):
-       # Start the WebSocket server
-        server = await websockets.serve(self.producer, "localhost", 8081)
-        print("Server started. Listening on ws://localhost:8765")
-        asyncio.create_task(self.stateMachine())
-        # Start broadcasting messages
-        #broadcast_task = asyncio.create_task(self.broadcast_message())
+            server = await websockets.serve(self.producer, "localhost", 8081)
+            print("Server started. Listening on ws://localhost:8081")
 
-        # Wait for the server to close
-        await server.wait_closed()
+            # Start broadcasting messages
+            broadcast_task = asyncio.create_task(self.stateMachine())
+
+
+
+            # Wait for the server to close
+            await server.wait_closed()
 
 async def run_websocket_server():
     websocketData = WebsocketData()
