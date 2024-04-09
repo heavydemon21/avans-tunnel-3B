@@ -1,7 +1,7 @@
 from typing import List
 from modbus import *
 
-#TODO fix hardcoded addresses
+MODBUS_CCTV_IP = "192.168.10.110"
 
 class CCTV:
     def __init__(self, ModbusInstance: modbus, start_address: int):
@@ -17,25 +17,26 @@ class CCTV:
         self.ModbusInstance = ModbusInstance
         self.start_address = start_address
 
+        self.SetTilt(self.TiltStand)
+        self.SetPan(self.PanStand)
+        self.SetPreset(self.Preset)
+        self.SetZoom(self.ZoomStand)
+
     def SetTilt(self, tilt):
-        if self.Bereikbaar:
             self.TiltStand = tilt
-            self.ModbusInstance.set(self.start_address + 1, tilt)
+            self.ModbusInstance.set(MODBUS_CCTV_IP,self.start_address + 1, tilt)
 
     def SetPan(self, pan):
-        if self.Bereikbaar:
             self.PanStand = pan
-            self.ModbusInstance.set(self.start_address, pan)
+            self.ModbusInstance.set(MODBUS_CCTV_IP, self.start_address, pan)
 
     def SetZoom(self, zoom):
-        if self.Bereikbaar:
             self.ZoomStand = zoom
-            self.ModbusInstance.set(self.start_address + 2, zoom)
+            self.ModbusInstance.set(MODBUS_CCTV_IP,self.start_address + 2, zoom)
 
     def SetPreset(self, preset):
-        if self.Bereikbaar:
             self.Preset = preset
-            self.ModbusInstance.set(self.start_address + 3, preset)
+            self.ModbusInstance.set(MODBUS_CCTV_IP,self.start_address + 3, preset)
 
 class Cameras:
     def __init__(self, ModbusInstance: modbus, num_cameras: int):
