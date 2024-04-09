@@ -12,7 +12,6 @@ class WebsocketData:
         try:
             async for message in websocket:
                 print("Received:", message)
-                self.jsonMessage = message
                 if message.lower() == 'exit':
                     await websocket.send("Server: Exiting")
                     break
@@ -28,7 +27,7 @@ class WebsocketData:
     # 3B -> HMI
 
     # Actuele snelheid per auto per zone 
-    async def snelheidAutoPerZone(toegangSnelheid, ingangSnelheid, centraleSnelheid, verlatingSnelheid):
+    async def snelheidAutoPerZone(self, toegangSnelheid, ingangSnelheid, centraleSnelheid, verlatingSnelheid):
             data = {}
             # naam van functie      
             data['type'] = "snelheidAutoPerZone"
@@ -43,7 +42,7 @@ class WebsocketData:
                 await ws.send(data)
 
     # Hoeveel auto’s per zone 
-    async def autoPerZone(autos):
+    async def autoPerZone(self, autos):
             data = {}
             # naam van functie
             data['type'] = "autoPerZone"
@@ -55,7 +54,7 @@ class WebsocketData:
                 await ws.send(data)
 
     # SOS/storing bericht 
-    async def sosBericht(statusSOS, storingBericht):
+    async def sosBericht(self, statusSOS, storingBericht):
             data = {}
             # naam van functie
             data['type'] = "sosBericht"
@@ -69,7 +68,7 @@ class WebsocketData:
                 await ws.send(data)
 
     # Status bericht per LFV (storing) 
-    async def lfvStatusStoring(storingLFV):
+    async def lfvStatusStoring(self, storingLFV):
             data = {}
             # naam van functie
             data['type'] = "lfvStatusStoring"
@@ -81,7 +80,7 @@ class WebsocketData:
                 await ws.send(data)
 
     # Status bericht per LFV (status van LFV) 
-    async def lfvStatussen(statusLFV):
+    async def lfvStatussen(self, statusLFV):
             data = {}
             # naam van functie
             data['type'] = "lfvStatussen"
@@ -92,10 +91,27 @@ class WebsocketData:
             for ws in connected_clients:
                 await ws.send(data)
 
-    
+    async def broadcast_message(self):
+        while True:
+            await asyncio.sleep(5)  # Wait for 5 seconds
+            # Broadcast the message to all connected clients
+            for ws in connected_clients:
+                await ws.send("Broadcast message: This is a broadcast message from the server.")
+        
     async def initWebSocket(self):
-        # Start the WebSocket server
+       # Start the WebSocket server
         server = await websockets.serve(self.producer, "localhost", 8081)
-        print("Server started. Listening on ws://localhost:8081")
+        print("Server started. Listening on ws://localhost:8765")
 
+        # Start broadcasting messages
+        broadcast_task = asyncio.create_task(self.broadcast_message())
+
+        # Wait for the server to close
+        await server.wait_closed()
+
+async def run_websocket_server():
+    websocketData = WebsocketData()
+    await websocketData.initWebSocket()          
+
+asyncio.run(run_websocket_server())
     # Wait for the server to close
