@@ -6,7 +6,6 @@ connected_clients = set()
 class WebsocketData:
     def __init__(self):
         self.jsonMessage = None
-        self.initWebSocket()
 
     async def producer(self, websocket, path):
         connected_clients.add(websocket)
@@ -96,8 +95,7 @@ class WebsocketData:
     
     async def initWebSocket(self):
         # Start the WebSocket server
-        websocketData = WebsocketData()
-        server = await websockets.serve(websocketData.producer, "localhost", 8081)
+        server = await websockets.serve(self.producer, "localhost", 8081)
         print("Server started. Listening on ws://localhost:8081")
 
     # Wait for the server to close
