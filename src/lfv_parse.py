@@ -12,8 +12,8 @@ from modbus import *
 
 
 class process_lfv:
-    def __init__(self, ip : str, port : int):
-        self.modbus = modbus(ip= ip, port=port)
+    def __init__(self):
+        self.modbus = modbus()
         self.Verlichting = Verlichting(self.modbus)
         self.Sos = SOS(self.modbus)
         self.Verkeerslicht = Verkeerslicht(self.modbus, 4)

@@ -19,14 +19,8 @@ class StateTunnel(Enum):
 
 CurrentTunnelState = StateTunnel.INIT;
 
-#TODO: add ip and correct port
-ip="128.64.32.32"
-port=502
 
-
-
-            #initialize everything
-lfv_processing = process_lfv(ip=ip,port=port)
+lfv_processing = process_lfv()
 
 while(1):
 

@@ -1,5 +1,6 @@
 from modbus import *
 
+MODBUS_MATRIXBOORD_IP = "192.168.10.111"
 
 class Matrix:
     def __init__(self, ModbusInstance: modbus):
@@ -10,7 +11,7 @@ class Matrix:
         self.ModbusInstance = ModbusInstance
 
     def update(self):
-        regs = self.ModbusInstance.get(7010, 5)
+        regs = self.ModbusInstance.get(MODBUS_MATRIXBOORD_IP,7010, 5)
         if regs:
             self.Stand = regs[1]
             self.Bereikbaar = regs[2]  
@@ -18,7 +19,7 @@ class Matrix:
             self.Storing = regs[4]
 
     def SetStand(self, value):
-        self.ModbusInstance.set(7000, value)
+        self.ModbusInstance.set(MODBUS_MATRIXBOORD_IP,7000, value)
 
 
         
