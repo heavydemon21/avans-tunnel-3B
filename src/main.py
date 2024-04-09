@@ -1,19 +1,29 @@
 from WebSocket import *
 from enum import Enum
 from lfv_parse import *
+from lfv_ready import *
+
 class StateTunnel(Enum):
+    PRE_INIT = 0
     INIT = 1
     RUN = 2
     SOS = 3
     STOP = 4
 
-CurrentTunnelState = StateTunnel.INIT;
+CurrentTunnelState = StateTunnel.PRE_INIT
 
 
 
 while(1):
 
     match CurrentTunnelState:
+        case StateTunnel.PRE_INIT:
+            # Poll holding register to see if PLC's available
+            if  lfv_check.check():
+                # Send update message to HMI and blocking wait until response
+
+                # Change state
+                CurrentTunnelState = StateTunnel.INIT
         case StateTunnel.INIT:
             print("INIT")
             lfv_processing = process_lfv()
