@@ -17,23 +17,24 @@ class CCTV:
         self.ModbusInstance = ModbusInstance
         self.start_address = start_address
 
+        self.SetTilt(self.TiltStand)
+        self.SetPan(self.PanStand)
+        self.SetPreset(self.Preset)
+        self.SetZoom(self.ZoomStand)
+
     def SetTilt(self, tilt):
-        if self.Bereikbaar:
             self.TiltStand = tilt
             self.ModbusInstance.set(MODBUS_CCTV_IP,self.start_address + 1, tilt)
 
     def SetPan(self, pan):
-        if self.Bereikbaar:
             self.PanStand = pan
             self.ModbusInstance.set(MODBUS_CCTV_IP, self.start_address, pan)
 
     def SetZoom(self, zoom):
-        if self.Bereikbaar:
             self.ZoomStand = zoom
             self.ModbusInstance.set(MODBUS_CCTV_IP,self.start_address + 2, zoom)
 
     def SetPreset(self, preset):
-        if self.Bereikbaar:
             self.Preset = preset
             self.ModbusInstance.set(MODBUS_CCTV_IP,self.start_address + 3, preset)
 

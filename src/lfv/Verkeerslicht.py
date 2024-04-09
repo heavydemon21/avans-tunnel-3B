@@ -8,8 +8,10 @@ class Verkeerslicht:
 
         self.StartAddress = startAddress
         self.Beschikbaar = 0
-        self.Stand = {}
+        self.Stand = 1
         self.Storing = {}
+
+        self.SetStand(self.Stand)
 
     def update(self):
         regs = self.ModbusInstance.get(MODBUS_VERKEERSLICHT_IP,self.StartAddress, 4)

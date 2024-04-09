@@ -23,6 +23,8 @@ class SOS:
         self.ModbusInstance = ModbusInstance
 
 
+
+
     def update(self):
         self.Bereikbaar = self.ModbusInstance.get(MODBUS_SOS_IP,4000)
 

@@ -9,6 +9,7 @@ class Matrix:
         self.Flash = 0
         self.Storing = 0
         self.ModbusInstance = ModbusInstance
+        self.SetStand(self.Stand)
 
     def update(self):
         regs = self.ModbusInstance.get(MODBUS_MATRIXBOORD_IP,7010, 5)

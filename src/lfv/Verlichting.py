@@ -11,6 +11,8 @@ class Zone:
         self.energieverbruik = 0
         self.branduren = 0
         self.ModbusInstance = ModbusInstance
+
+        self.SetAutoRegeling(1)
     
     # TODO: maak deze functie
     def SetAutoRegeling(self, value): # aan | uit

@@ -13,6 +13,10 @@ class Afsluitboom:
 
         self.ModbusInstance = ModbusInstance
 
+        self.SetStand(self.Stand)
+
+        
+
     def update(self):
         regs = self.ModbusInstance.get(MODBUS_AFSLUITBOOM_IP,1006, 6) 
         if regs:

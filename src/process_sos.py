@@ -4,8 +4,8 @@ def sos_on(lfv: process_lfv , zone: int):
     while lfv.Verkeerslicht.Stand != 1:
         lfv.Verkeerslicht.update()
     lfv.Afsluitboom.SetStand(1)
-    for zone in lfv.Verlichting.Zones:
-        zone.SetAutoRegeling(False)
+    for z in lfv.Verlichting.Zones:
+        z.SetAutoRegeling(False)
     lfv.Verlichting.SetStand(10)
     lfv.Matrix.SetStand(1)
     #TODO camera stand toevoegen
