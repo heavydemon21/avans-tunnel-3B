@@ -1,12 +1,64 @@
 import asyncio
 import websockets
 import json
-
+from enum import Enum
+from lfv_ready import *
+from lfv_parse import *
 connected_clients = set()
+class StateTunnel(Enum):
+    PRE_INIT = 0
+    INIT = 1
+    RUN = 2
+    SOS = 3
+    STOP = 4
+
 class WebsocketData:
     def __init__(self):
+        self.CurrentTunnelState = StateTunnel.INIT
         self.jsonMessage = None
+        self.lfv_processing = None
 
+    async def stateMachine(self):
+         while(1):
+
+            match self.CurrentTunnelState:
+                case StateTunnel.PRE_INIT:
+                    # Poll holding register to see if PLC's available
+                    if  lfv_check().check():
+                        # Send update message to HMI and blocking wait until response
+
+                        # Change state
+                        CurrentTunnelState = StateTunnel.INIT
+                case StateTunnel.INIT:
+                    print("INIT")
+                    self.lfv_processing = process_lfv()
+                    # goto next state
+                    self.CurrentTunnelState = StateTunnel.RUN
+                case StateTunnel.RUN:
+                    print("RUN")
+                    if self.lfv_processing is not None:
+                        # update all the lvf's
+                        self.lfv_processing.update_all()
+
+                    else:
+                        print("ERROR: lfv_proccesing is not initalized")
+                    conflict = self.lfv_processing.detect_conflict()
+                    if conflict:
+                        self.CurrentTunnelState = StateTunnel.SOS
+                    #TODO: from run -> SOS / run -> STOP
+                case StateTunnel.SOS:
+                    print("SOS")
+                    
+                    if self.jsonMessage['statusSOS'] == False:
+                         self.CurrentTunnelState == StateTunnel.RUN
+                         
+                    #TODO: from SOS -> run
+                case StateTunnel.STOP:
+                    print("STOP")
+                    
+                    #TODO: from STOP -> run
+                case _:
+                    print("ERROR: state tunnel")
     async def producer(self, websocket, path):
         connected_clients.add(websocket)
         try:
@@ -102,9 +154,9 @@ class WebsocketData:
        # Start the WebSocket server
         server = await websockets.serve(self.producer, "localhost", 8081)
         print("Server started. Listening on ws://localhost:8765")
-
+        asyncio.create_task(self.stateMachine())
         # Start broadcasting messages
-        broadcast_task = asyncio.create_task(self.broadcast_message())
+        #broadcast_task = asyncio.create_task(self.broadcast_message())
 
         # Wait for the server to close
         await server.wait_closed()
