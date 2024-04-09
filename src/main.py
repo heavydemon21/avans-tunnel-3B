@@ -22,6 +22,7 @@ CurrentTunnelState = StateTunnel.INIT;
 
 lfv_processing = process_lfv()
 
+
 while(1):
 
     match CurrentTunnelState:
@@ -38,15 +39,18 @@ while(1):
 
             else:
                 print("ERROR: lfv_proccesing is not initalized")
-
+            conflict = lfv_processing.detect_confict()
+            if conflict:
+                CurrentTunnelState = StateTunnel.SOS
             #TODO: from run -> SOS / run -> STOP
         case StateTunnel.SOS:
             print("SOS")
-
+            
+            
             #TODO: from SOS -> run
         case StateTunnel.STOP:
             print("STOP")
-
+            
             #TODO: from STOP -> run
         case _:
             print("ERROR: state tunnel")

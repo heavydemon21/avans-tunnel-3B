@@ -1,5 +1,4 @@
 from modbus import modbus
-
 t = modbus('86.88.46.183', 502)
 
 def sos_on():
@@ -74,10 +73,10 @@ def read_storing():
     
 
 def check_conflict():
+    stilstand_list = []
+    onderschrijding_list = []
     stilstand_list = read_stilstand()
     onderschrijding_list = read_onderschrijding()
-    disabled_list = read_disabled()
-    storing_list = read_storing()
     # test variable
     # stilstand_list = [[0,0,0,1],[1,1,0,0],[1,0,1,0],[1,0,0,1]]
     # onderschrijding_list = [[0,0,0,1],[1,1,0,0],[1,0,1,0],[1,0,0,1]]
@@ -96,11 +95,5 @@ def check_conflict():
             if position > 0:
                 print("onderschrijding op stook %d en positie: %d" % (lane_idx, position_idx))
 
-    for lane_idx, lane in enumerate(storing_list):
-        for position_idx, position in enumerate(lane):
-            if position > 0:
-                print("storing op stook %d en positie: %d" % (lane_idx, position_idx))
     if stilstand_count == 0:
         sos_off()
-
-check_conflict()
