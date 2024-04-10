@@ -18,8 +18,8 @@ class Zone:
     def SetAutoRegeling(self, value): # aan | uit
         pass
 
-    def SetStand(self, value: int): # value between 0-10
-        self.ModbusInstance.set(MODBUS_VERLICHTING_IP,self.StartAddress+1, value)
+    def SetStand(self, value ): # value between 0-10
+        return self.ModbusInstance.set(MODBUS_VERLICHTING_IP,self.StartAddress+1, value)
 
 
 class Verlichting:

@@ -18,7 +18,7 @@ class WebsocketData:
     def __init__(self):
         self.CurrentTunnelState = StateTunnel.PRE_INIT
         self.jsonMessage = None
-        self.lfv_processing = None
+        self.lfv_processing : process_lfv
         self.start = False
         self.sosStatus = False
         self.lfVOnline = [True,True,True,True,True,True]
@@ -34,8 +34,8 @@ class WebsocketData:
                         # Send update message to HMI and blocking wait until response
                         print(self.jsonMessage)
                         # Change state
-                        self.startStatus(self,True)
-                        CurrentTunnelState = StateTunnel.INIT
+                        await self.startStatus(True)
+                        self.CurrentTunnelState = StateTunnel.INIT
                 case StateTunnel.INIT:
                     print("INIT")
                     while(self.start == False):
@@ -54,27 +54,28 @@ class WebsocketData:
                         #self.lfvStatussen
                     else:
                         print("ERROR: lfv_proccesing is not initalized")
+
                     conflict = self.lfv_processing.detect_conflict()
                     match conflict:
                         case 1:
-                            self.sosBericht(True, "Spookrijder op deel 1")
+                            await self.sosBericht(True, "Spookrijder op deel 1")
                         case 2:
-                            self.sosBericht(True, "Spookrijder op deel 2")
+                            await self.sosBericht(True, "Spookrijder op deel 2")
                         case 3:
-                            self.sosBericht(True, "Spookrijder op deel 3")
+                            await self.sosBericht(True, "Spookrijder op deel 3")
                         case 4:
-                            self.sosBericht(True,"stilstand in zone 1")
+                            await self.sosBericht(True,"stilstand in zone 1")
                         case 5:
-                            self.sosBericht(True,"stilstand in zone 2")
+                            await self.sosBericht(True,"stilstand in zone 2")
                     if conflict > 0:
-                        self.sosStatus == True
+                        self.sosStatus = True
                         self.CurrentTunnelState = StateTunnel.SOS
                     #TODO: from run -> SOS / run -> STOP
                 case StateTunnel.SOS:
                     print("SOS")
                     
                     if self.sosStatus == False:
-                         self.CurrentTunnelState == StateTunnel.RUN
+                         self.CurrentTunnelState = StateTunnel.RUN
                          
                     #TODO: from SOS -> run
                 case StateTunnel.STOP:
@@ -236,17 +237,17 @@ class WebsocketData:
                     if type['open']:
                             if self.lfv_processing.Afsluitboom.SetStand([2]):
                                 self.lfVOnline[2] = False
-                                self.lfvStatussen(self,self.lfVOnline)
+                                await self.lfvStatussen(self.lfVOnline)
                     if type['open'] == False:
                         if self.lfv_processing.Afsluitboom.SetStand([1]):
                             self.lfVOnline[2] = False
-                            self.lfvStatussen(self,self.lfVOnline)
+                            await self.lfvStatussen(self.lfVOnline)
             case "matrix": 
                 if self.sosStatus == False:
                     data = type["state"]
                     if self.lfv_processing.Matrix.SetStand([data]) == False:
                         self.lfVOnline[3] = False
-                        self.lfvStatussen(self,self.lfVOnline)
+                        await self.lfvStatussen(self.lfVOnline)
                     print(data)
             case "lights":
                 if self.sosStatus == False:
@@ -254,14 +255,14 @@ class WebsocketData:
                     
                     if self.lfv_processing.Verlichting.SetStand[data] == False:
                         self.lfVOnline[4] = False
-                        self.lfvStatussen(self,self.lfVOnline)
+                        await self.lfvStatussen(self.lfVOnline)
                     print(data)
             case "trafficLights":
                 if self.sosStatus == False:
                     data = type["state"]
                     if self.lfv_processing.Verkeerslicht.SetStand([data]) == False:
                         self.lfVOnline[5] = False
-                        self.lfvStatussen(self,self.lfVOnline)
+                        await self.lfvStatussen(self.lfVOnline)
                     print(data)
             case "sosBericht":
                 data = type["statusSOS"]
