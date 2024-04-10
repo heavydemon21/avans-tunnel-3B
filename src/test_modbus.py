@@ -1,7 +1,8 @@
 from modbus import modbus
 
-t = modbus('86.88.46.183', 502)
+t = modbus()
+ip="192.168.10.126"
 
-print(t.get(1000, 5))
-print(t.set(1000, [0]))
-print(t.get(1000, 5))
+print(t.get(ip, 0, 5))
+# print(t.set(ip, 0, [1]))
+# print(t.get(ip, 0, 5))
