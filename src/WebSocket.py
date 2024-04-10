@@ -138,7 +138,7 @@ class WebsocketData:
             data = json.dumps(data)
             data = str(data)
             for ws in connected_clients:
-            await ws.send(data)
+                await ws.send(data)
 
     # Hoeveel auto’s per zone 
     async def autoPerZone(self, autos):
