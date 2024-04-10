@@ -16,11 +16,12 @@ class StateTunnel(Enum):
 
 class WebsocketData:
     def __init__(self):
-        self.CurrentTunnelState = StateTunnel.INIT
+        self.CurrentTunnelState = StateTunnel.PRE_INIT
         self.jsonMessage = None
         self.lfv_processing = None
         self.start = False
         self.sosStatus = False
+        self.lfVOnline = [True,True,True,True,True,True]
 
     async def stateMachine(self):
          while True:
@@ -216,23 +217,34 @@ class WebsocketData:
                 print("barrier")
                 if self.sosStatus == False:
                     if type['open']:
-                            self.lfv_processing.Afsluitboom.Stand([2])
+                            if self.lfv_processing.Afsluitboom.SetStand([2]):
+                                self.lfVOnline[2] = False
+                                self.lfvStatussen(self,self.lfVOnline)
                     if type['open'] == False:
-                        self.lfv_processing.Afsluitboom.Stand([1])
+                        if self.lfv_processing.Afsluitboom.SetStand([1]):
+                            self.lfVOnline[2] = False
+                            self.lfvStatussen(self,self.lfVOnline)
             case "matrix": 
                 if self.sosStatus == False:
                     data = type["state"]
-                    self.lfv_processing.Matrix.SetStand([data])
+                    if self.lfv_processing.Matrix.SetStand([data]) == False:
+                        self.lfVOnline[3] = False
+                        self.lfvStatussen(self,self.lfVOnline)
                     print(data)
             case "lights":
                 if self.sosStatus == False:
                     data = type["value"]
-                    self.lfv_processing.Verlichting.SetStand[data]
+                    
+                    if self.lfv_processing.Verlichting.SetStand[data]:
+                        self.lfVOnline[4] = False
+                        self.lfvStatussen(self,self.lfVOnline)
                     print(data)
             case "trafficLights":
                 if self.sosStatus == False:
                     data = type["state"]
-                    self.lfv_processing.Verkeerslicht.SetStand([data])
+                    if self.lfv_processing.Verkeerslicht.SetStand([data]) == False:
+                        self.lfVOnline[5] = False
+                        self.lfvStatussen(self,self.lfVOnline)
                     print(data)
             case "sosBericht":
                 data = type["statusSOS"]
