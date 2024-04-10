@@ -16,7 +16,7 @@ class StateTunnel(Enum):
 
 class WebsocketData:
     def __init__(self):
-        self.CurrentTunnelState = StateTunnel.PRE_INIT
+        self.CurrentTunnelState = StateTunnel.INIT
         self.jsonMessage = None
         self.lfv_processing = None
         self.start = False
@@ -27,11 +27,13 @@ class WebsocketData:
             await asyncio.sleep(1)
             match self.CurrentTunnelState:
                 case StateTunnel.PRE_INIT:
+                    print("PRE INIT")
                     # Poll holding register to see if PLC's available
                     if  lfv_check().check():
                         # Send update message to HMI and blocking wait until response
                         print(self.jsonMessage)
                         # Change state
+                        self.startStatus(self,True)
                         CurrentTunnelState = StateTunnel.INIT
                 case StateTunnel.INIT:
                     print("INIT")
@@ -101,6 +103,105 @@ class WebsocketData:
     # Other methods...
 
 
+    
+
+    
+
+    async def broadcast_message(self):
+        while True:
+            await asyncio.sleep(5)  # Wait for 5 seconds
+            # Broadcast the message to all connected clients
+            for ws in connected_clients:
+                await ws.send("Broadcast message: This is a broadcast message from the server.")
+        
+    async def initWebSocket(self):
+        server = await websockets.serve(self.producer, "localhost", 8081)
+        print("Server started. Listening on ws://localhost:8081")
+
+        # Start broadcasting messages
+        broadcast_task = asyncio.create_task(self.stateMachine())
+        # Wait for the server to close
+        await server.wait_closed()
+
+            # 3B -> HMI
+
+    # Actuele snelheid per auto per zone 
+    async def snelheidAutoPerZone(self, toegangSnelheid, ingangSnelheid, centraleSnelheid, verlatingSnelheid):
+            data = {}
+            # naam van functie      
+            data['type'] = "snelheidAutoPerZone"
+            # doorsturen auto snelheden per zone | array index = auto nummer | array[90, 100, 70, 30...]
+            data['snelHedenToegang'] = toegangSnelheid
+            data['snelHedeningang'] = ingangSnelheid
+            data['snelHedencentrale'] = centraleSnelheid
+            data['snelHedenverlating'] = verlatingSnelheid
+            data = json.dumps(data)
+            data = str(data)
+            for ws in connected_clients:
+            await ws.send(data)
+
+    # Hoeveel auto’s per zone 
+    async def autoPerZone(self, autos):
+        data = {}
+        # naam van functie
+        data['type'] = "autoPerZone"
+        # doorsturen autos per zone | array index = zone [toegangszone, ingangszone, centralezone, verlatingzone] | array[15, 8, 9, 23]
+        data['autos'] = autos
+        data = json.dumps(data)
+        data = str(data)
+        for ws in connected_clients:
+            await ws.send(data)
+
+    # SOS/storing bericht 
+    async def sosBericht(self, statusSOS, storingBericht):
+        data = {}
+        # naam van functie
+        data['type'] = "sosBericht"
+        # boolean met status van SOS
+        data['statusSOS'] = statusSOS
+        # Bericht voor de storing
+        data['storingBericht'] = storingBericht
+        data = json.dumps(data)
+        data = str(data)
+        for ws in connected_clients:
+            await ws.send(data)
+
+    # Status bericht per LFV (storing) 
+    async def lfvStatusStoring(self, storingLFV):
+        data = {}
+        # naam van functie
+        data['type'] = "lfvStatusStoring"
+        # array met storingen voor lfvs | array index = nummer LFV | array[false, true, false, false...]
+        data['storingLFV'] = storingLFV
+        data = json.dumps(data)
+        data = str(data)
+        for ws in connected_clients:
+            await ws.send(data)
+
+    # Status bericht per LFV (status van LFV) 
+    async def lfvStatussen(self, statusLFV):
+        data = {}
+        # naam van functie
+        data['type'] = "lfvStatussen"
+        # array met storing statussen voor lfvs | array index = nummer LFV | array[true, false, false, true...]
+        data['statusLFV'] = statusLFV
+        data = json.dumps(data)
+        data = str(data)
+        for ws in connected_clients:
+            await ws.send(data)
+
+    async def startStatus(self, statusStart):
+        data = {}
+        # naam van functie
+        data['type'] = "lfvReady"
+      
+        data['ready'] = statusStart
+        data = json.dumps(data)
+        data = str(data)
+        for ws in connected_clients:
+            await ws.send(data)
+
+
     async def parseJSON(self, message):
         type = json.loads(message)
         typeName = type["type"]
@@ -118,7 +219,7 @@ class WebsocketData:
                             self.lfv_processing.Afsluitboom.Stand([2])
                     if type['open'] == False:
                         self.lfv_processing.Afsluitboom.Stand([1])
-            case "matrix":
+            case "matrix": 
                 if self.sosStatus == False:
                     data = type["state"]
                     self.lfv_processing.Matrix.SetStand([data])
@@ -138,91 +239,7 @@ class WebsocketData:
                 self.sosStatus = False
                 print(data)
 
-    # 3B -> HMI
-
-    # Actuele snelheid per auto per zone 
-    async def snelheidAutoPerZone(self, toegangSnelheid, ingangSnelheid, centraleSnelheid, verlatingSnelheid):
-            data = {}
-            # naam van functie      
-            data['type'] = "snelheidAutoPerZone"
-            # doorsturen auto snelheden per zone | array index = auto nummer | array[90, 100, 70, 30...]
-            data['snelHedenToegang'] = toegangSnelheid
-            data['snelHedeningang'] = ingangSnelheid
-            data['snelHedencentrale'] = centraleSnelheid
-            data['snelHedenverlating'] = verlatingSnelheid
-            data = json.dumps(data)
-            data = str(data)
-            for ws in connected_clients:
-                await ws.send(data)
-
-    # Hoeveel auto’s per zone 
-    async def autoPerZone(self, autos):
-            data = {}
-            # naam van functie
-            data['type'] = "autoPerZone"
-            # doorsturen autos per zone | array index = zone [toegangszone, ingangszone, centralezone, verlatingzone] | array[15, 8, 9, 23]
-            data['autos'] = autos
-            data = json.dumps(data)
-            data = str(data)
-            for ws in connected_clients:
-                await ws.send(data)
-
-    # SOS/storing bericht 
-    async def sosBericht(self, statusSOS, storingBericht):
-            data = {}
-            # naam van functie
-            data['type'] = "sosBericht"
-            # boolean met status van SOS
-            data['statusSOS'] = statusSOS
-            # Bericht voor de storing
-            data['storingBericht'] = storingBericht
-            data = json.dumps(data)
-            data = str(data)
-            for ws in connected_clients:
-                await ws.send(data)
-
-    # Status bericht per LFV (storing) 
-    async def lfvStatusStoring(self, storingLFV):
-            data = {}
-            # naam van functie
-            data['type'] = "lfvStatusStoring"
-            # array met storingen voor lfvs | array index = nummer LFV | array[false, true, false, false...]
-            data['storingLFV'] = storingLFV
-            data = json.dumps(data)
-            data = str(data)
-            for ws in connected_clients:
-                await ws.send(data)
-
-    # Status bericht per LFV (status van LFV) 
-    async def lfvStatussen(self, statusLFV):
-            data = {}
-            # naam van functie
-            data['type'] = "lfvStatussen"
-            # array met storing statussen voor lfvs | array index = nummer LFV | array[true, false, false, true...]
-            data['statusLFV'] = statusLFV
-            data = json.dumps(data)
-            data = str(data)
-            for ws in connected_clients:
-                await ws.send(data)
-
-    async def broadcast_message(self):
-        while True:
-            await asyncio.sleep(5)  # Wait for 5 seconds
-            # Broadcast the message to all connected clients
-            for ws in connected_clients:
-                await ws.send("Broadcast message: This is a broadcast message from the server.")
-        
-    async def initWebSocket(self):
-            server = await websockets.serve(self.producer, "localhost", 8081)
-            print("Server started. Listening on ws://localhost:8081")
-
-            # Start broadcasting messages
-            broadcast_task = asyncio.create_task(self.stateMachine())
-
-
-
-            # Wait for the server to close
-            await server.wait_closed()
+    
 
 async def run_websocket_server():
     websocketData = WebsocketData()
