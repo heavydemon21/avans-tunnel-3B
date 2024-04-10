@@ -13,7 +13,7 @@ class Afsluitboom:
 
         self.ModbusInstance = ModbusInstance
 
-        self.SetStand(self.Stand)
+        self.SetStand([self.Stand])
 
         
 
@@ -28,7 +28,7 @@ class Afsluitboom:
 
     def SetStand(self, value):
         if self.Bereikbaar:
-            self.ModbusInstance.set(MODBUS_AFSLUITBOOM_IP, 1006, value)
+            return self.ModbusInstance.set(MODBUS_AFSLUITBOOM_IP, 1006, value)
 
 
         

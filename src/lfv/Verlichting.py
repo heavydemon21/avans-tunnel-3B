@@ -12,7 +12,7 @@ class Zone:
         self.branduren = 0
         self.ModbusInstance = ModbusInstance
 
-        self.SetAutoRegeling(1)
+        self.SetAutoRegeling([1])
     
     # TODO: maak deze functie
     def SetAutoRegeling(self, value): # aan | uit
@@ -47,4 +47,4 @@ class Verlichting:
                 self.Bereikbaar = 1
         
     def SetStand(self, value: int):
-        self.ModbusInstance.set(MODBUS_VERLICHTING_IP,2500, value)
+        return self.ModbusInstance.set(MODBUS_VERLICHTING_IP,2500, value)

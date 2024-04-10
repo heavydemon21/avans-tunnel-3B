@@ -1,5 +1,4 @@
 
-from WebSocket import *
 from lfv.Afsluitboom import Afsluitboom
 from lfv.CCTV import Cameras
 from lfv.Matrixbord import Matrix
@@ -21,29 +20,29 @@ class process_lfv:
         self.cameras = Cameras(self.modbus, NumberOfCameras)
         
 
-    def  detect_confict(self):
+    def  detect_conflict(self):
         if self.Sos.Deel1_Spookrijder == 1:
             # sosBericht(True, "Spookrijder op deel 1")
             sos_on(self,1)
-            return True
+            return 1
         if self.Sos.Deel2_Spookrijder == 1:
             # sosBericht(True, "Spookrijder op deel 2")
             sos_on(self,1)
-            return True
+            return 2
         if self.Sos.Deel3_Spookrijder == 1:
             # sosBericht(True, "Spookrijder op deel 3")
             sos_on(self,1)
-            return True
+            return 3
 
         if self.Sos.Zone1_Stilstanden >= 1:
             # sosBericht(True,"stilstand in zone 1")
             sos_on(self,1)
-            return True
+            return 4
         if self.Sos.Zone2_Stilstanden >= 1:
             # sosBericht(True,"stilstand in zone 2")
             sos_on(self,1)
-            return True
-        return False
+            return 5
+        return 0
 
     def update_all(self):
         self.Verlichting.update()
