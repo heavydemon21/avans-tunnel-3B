@@ -12,17 +12,54 @@ class WebsocketData:
         try:
             async for message in websocket:
                 print("Received:", message)
+                await self.parseJSON(message)
+
+
                 if message.lower() == 'exit':
-                    await websocket.send("Server: Exiting")
+                    print(("Server: Exiting"))
                     break
                 response = f"Server: Received '{message}'."
-                await websocket.send(response)
+               
                 print("Sent:", response)
         finally:
             connected_clients.remove(websocket)
 
     # Other methods...
 
+    async def parseJSON(self, message):
+        type = json.loads(message)
+        typeName = type["type"]
+
+        match typeName:
+            case "start":
+                print("start")
+            case "photocell":
+                data = type["on"]
+                print(data)
+            case "barrier":
+                print("barrier")
+            case "matrix":
+                data = type["open"]
+                print(data)
+            case "lights":
+                data = type["value"]
+                print(data)
+            case "trafficLights":
+                data = type["state"]
+                print(data)
+            case "sosBericht":
+                data = type["statusSOS"]
+                print(data)
+            case "cctvPreset":
+                data = type["preset"]
+                print(data)
+            case "cctvPreset":
+                pan = type["pan"]
+                tilt = type["tilt"]
+                zoom = type["zoom"]
+                print(pan) 
+                print(tilt) 
+                print(zoom) 
 
     # 3B -> HMI
 
@@ -93,18 +130,18 @@ class WebsocketData:
 
     async def broadcast_message(self):
         while True:
-            await asyncio.sleep(5)  # Wait for 5 seconds
+            await asyncio.sleep(1)  # Wait for 5 seconds
             # Broadcast the message to all connected clients
-            for ws in connected_clients:
-                await ws.send("Broadcast message: This is a broadcast message from the server.")
         
     async def initWebSocket(self):
        # Start the WebSocket server
         server = await websockets.serve(self.producer, "localhost", 8081)
-        print("Server started. Listening on ws://localhost:8765")
+        print("Server started. Listening on ws://localhost:8081")
 
         # Start broadcasting messages
         broadcast_task = asyncio.create_task(self.broadcast_message())
+
+
 
         # Wait for the server to close
         await server.wait_closed()
