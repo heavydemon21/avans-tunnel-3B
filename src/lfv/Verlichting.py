@@ -47,4 +47,4 @@ class Verlichting:
                 self.Bereikbaar = 1
         
     def SetStand(self, value: int):
-        self.ModbusInstance.set(MODBUS_VERLICHTING_IP,2500, value)
+        return self.ModbusInstance.set(MODBUS_VERLICHTING_IP,2500, value)

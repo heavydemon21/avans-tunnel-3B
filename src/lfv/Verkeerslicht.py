@@ -21,5 +21,5 @@ class Verkeerslicht:
              self.Storing = regs[3]
 
     def SetStand(self, value): # value between 1-2
-        self.ModbusInstance.set(MODBUS_VERKEERSLICHT_IP, self.StartAddress, value)        
+        return self.ModbusInstance.set(MODBUS_VERKEERSLICHT_IP, self.StartAddress, value)        
 

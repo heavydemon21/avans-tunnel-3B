@@ -235,7 +235,7 @@ class WebsocketData:
                 if self.sosStatus == False:
                     data = type["value"]
                     
-                    if self.lfv_processing.Verlichting.SetStand[data]:
+                    if self.lfv_processing.Verlichting.SetStand[data] == False:
                         self.lfVOnline[4] = False
                         self.lfvStatussen(self,self.lfVOnline)
                     print(data)

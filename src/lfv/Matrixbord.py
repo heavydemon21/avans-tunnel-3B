@@ -20,7 +20,7 @@ class Matrix:
             self.Storing = regs[4]
 
     def SetStand(self, value):
-        self.ModbusInstance.set(MODBUS_MATRIXBOORD_IP,7000, value)
+       return self.ModbusInstance.set(MODBUS_MATRIXBOORD_IP,7000, value)
 
 
         
