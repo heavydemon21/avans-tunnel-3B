@@ -53,3 +53,6 @@ while(1):
             #TODO: from STOP -> run
         case _:
             print("ERROR: state tunnel")
+
+
+asyncio.run(runWebSocket())
