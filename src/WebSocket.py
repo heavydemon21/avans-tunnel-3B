@@ -16,7 +16,7 @@ class StateTunnel(Enum):
 
 class WebsocketData:
     def __init__(self):
-        self.CurrentTunnelState = StateTunnel.INIT
+        self.CurrentTunnelState = StateTunnel.PRE_INIT
         self.jsonMessage = None
         self.lfv_processing = None
         self.start = False
@@ -38,21 +38,33 @@ class WebsocketData:
                     while(self.start == False):
                         await asyncio.sleep(1)
                         print(self.jsonMessage)
-                        dghdgf = 0
-                    #self.lfv_processing = process_lfv()
+                    self.lfv_processing = process_lfv()
                     
                     # goto next state
-                    #self.CurrentTunnelState = StateTunnel.RUN
+                    self.CurrentTunnelState = StateTunnel.RUN
                 case StateTunnel.RUN:
                     print("RUN")
                     if self.lfv_processing is not None:
                         # update all the lvf's
                         self.lfv_processing.update_all()
-
+                        #self.snelheidAutoPerZone()
+                        #self.lfvStatussen
                     else:
                         print("ERROR: lfv_proccesing is not initalized")
                     conflict = self.lfv_processing.detect_conflict()
-                    if conflict:
+                    match conflict:
+                        case 1:
+                            self.sosBericht(True, "Spookrijder op deel 1")
+                        case 2:
+                            self.sosBericht(True, "Spookrijder op deel 2")
+                        case 3:
+                            self.sosBericht(True, "Spookrijder op deel 3")
+                        case 4:
+                            self.sosBericht(True,"stilstand in zone 1")
+                        case 5:
+                            self.sosBericht(True,"stilstand in zone 2")
+                    if conflict > 0:
+                        self.sosStatus == True
                         self.CurrentTunnelState = StateTunnel.SOS
                     #TODO: from run -> SOS / run -> STOP
                 case StateTunnel.SOS:
@@ -96,19 +108,31 @@ class WebsocketData:
             case "start":
                 self.start = True
             case "photocell":
-                data = type["on"]
-                print(data)
+                if self.sosStatus == False:
+                    data = type["on"] 
+                    print(data)
             case "barrier":
                 print("barrier")
+                if self.sosStatus == False:
+                    if type['open']:
+                            self.lfv_processing.Afsluitboom.Stand([2])
+                    if type['open'] == False:
+                        self.lfv_processing.Afsluitboom.Stand([1])
             case "matrix":
-                data = type["state"]
-                print(data)
+                if self.sosStatus == False:
+                    data = type["state"]
+                    self.lfv_processing.Matrix.SetStand([data])
+                    print(data)
             case "lights":
-                data = type["value"]
-                print(data)
+                if self.sosStatus == False:
+                    data = type["value"]
+                    self.lfv_processing.Verlichting.SetStand[data]
+                    print(data)
             case "trafficLights":
-                data = type["state"]
-                print(data)
+                if self.sosStatus == False:
+                    data = type["state"]
+                    self.lfv_processing.Verkeerslicht.SetStand([data])
+                    print(data)
             case "sosBericht":
                 data = type["statusSOS"]
                 self.sosStatus = False
